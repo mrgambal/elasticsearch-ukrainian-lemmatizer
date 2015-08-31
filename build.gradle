@@ -1,0 +1,57 @@
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+group = 'org.sotnya'
+version = '1.0-SNAPSHOT'
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+description = """Ukrainian lemmagen plugin for ElasticSearch"""
+
+repositories {
+    mavenLocal()
+
+    maven { url "https://oss.sonatype.org/content/repositories/releases" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    maven { url "http://repo.maven.apache.org/maven2" }
+}
+
+dependencies {
+    compile group: 'org.elasticsearch', name: 'elasticsearch', version: '1.7.1'
+}
+
+File explodedDistDir = new File(distsDir, 'exploded')
+println explodedDistDir
+
+jar.manifest.mainAttributes("Implementation-Title": "ElasticSearch::Plugins::Analysis::UkrainianLemmagen", "Implementation-Version": rootProject.version, "Implementation-Date": new Date().format("yyyy-MM-dd HH:mm:ss"))
+
+task explodedDist(dependsOn: [jar], description: 'Builds the plugin zip file') << {
+    [explodedDistDir]*.mkdirs()
+
+    copy {
+        from configurations.compile
+        into explodedDistDir
+    }
+
+    ant.delete {
+        fileset(dir: explodedDistDir, includes: "elasticsearch-*.jar")
+    }
+
+    copy {
+        from libsDir
+        into explodedDistDir
+    }
+
+    ant.delete { fileset(dir: explodedDistDir, includes: "lucene-*.jar") }
+    ant.delete { fileset(dir: explodedDistDir, includes: "spatial4j-*.jar") }
+}
+
+task zip(type: Zip, dependsOn: ['explodedDist']) {
+    from(explodedDistDir) {
+    }
+}
+
+task release(dependsOn: [zip]) << {
+    ant.delete(dir: explodedDistDir)
+}
