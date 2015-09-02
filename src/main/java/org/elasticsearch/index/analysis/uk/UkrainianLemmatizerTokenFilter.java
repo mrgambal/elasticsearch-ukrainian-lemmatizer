@@ -1,38 +1,42 @@
 package org.elasticsearch.index.analysis.uk;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
-import org.sotnya.lemmagen.uk.engine.UkrainianLemmagen;
+import org.sotnya.lemmatizer.uk.engine.UkrainianLemmatizer;
 
-public class UkrainianLemmagenTokenFilter extends TokenFilter {
-    private UkrainianLemmagen lemmatizer = null;
+public class UkrainianLemmatizerTokenFilter extends TokenFilter {
+    private UkrainianLemmatizer lemmatizer = null;
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private final KeywordAttribute keywordAttr = addAttribute(KeywordAttribute.class);
 
-    public UkrainianLemmagenTokenFilter(final TokenStream input, final UkrainianLemmagen lemmatizer) {
+    public UkrainianLemmatizerTokenFilter(final TokenStream input, final UkrainianLemmatizer lemmatizer) {
         super(input);
         this.lemmatizer = lemmatizer;
     }
 
+    /**
+     * @return true if token was added to search/analysis stream
+     * @throws IOException
+     */
     @Override
     public final boolean incrementToken() throws IOException {
         if (!input.incrementToken()) {
             return false;
         }
 
-        if (!keywordAttr.isKeyword()) {
-            termAtt.setEmpty().append(lemmatizer.lemmatize(termAtt));
-        }
+        Optional<CharSequence> lemma = lemmatizer.lemmatize(termAtt);
 
-//        CharSequence lemma = lemmatizer.lemmatize(termAtt);
-//        if (!keywordAttr.isKeyword() && !equalCharSequences(lemma, termAtt)) {
-//            termAtt.setEmpty().append(lemmatizer.lemmatize(termAtt));
-//        }
+        if (lemma.isPresent()) {
+            if(!keywordAttr.isKeyword() && !equalCharSequences(lemma.get(), termAtt)) {
+                termAtt.setEmpty().append(lemma.get());
+            }
+        }
 
         return true;
     }
@@ -41,7 +45,6 @@ public class UkrainianLemmagenTokenFilter extends TokenFilter {
      * Compare two char sequences for equality. Assumes non-null arguments.
      */
     private boolean equalCharSequences(CharSequence s1, CharSequence s2) {
-        char rawSymbol;
         int len1 = s1.length();
         int len2 = s2.length();
 

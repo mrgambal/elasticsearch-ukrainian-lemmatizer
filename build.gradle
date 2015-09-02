@@ -7,7 +7,7 @@ version = '1.0-SNAPSHOT'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
-description = """Ukrainian lemmagen plugin for ElasticSearch"""
+description = """Ukrainian lemmatizer plugin for ElasticSearch"""
 
 repositories {
     mavenLocal()
@@ -24,7 +24,7 @@ dependencies {
 File explodedDistDir = new File(distsDir, 'exploded')
 println explodedDistDir
 
-jar.manifest.mainAttributes("Implementation-Title": "ElasticSearch::Plugins::Analysis::UkrainianLemmagen", "Implementation-Version": rootProject.version, "Implementation-Date": new Date().format("yyyy-MM-dd HH:mm:ss"))
+jar.manifest.mainAttributes("Implementation-Title": "ElasticSearch::Plugins::Analysis::UkrainianLemmatizer", "Implementation-Version": rootProject.version, "Implementation-Date": new Date().format("yyyy-MM-dd HH:mm:ss"))
 
 task explodedDist(dependsOn: [jar], description: 'Builds the plugin zip file') << {
     [explodedDistDir]*.mkdirs()

@@ -2,22 +2,22 @@ package org.elasticsearch.plugin.analysis.uk;
 
 import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.index.analysis.AnalysisModule;
-import org.elasticsearch.index.analysis.uk.UkrainianLemmagenBinderProcessor;
+import org.elasticsearch.index.analysis.uk.UkrainianLemmatizerBinderProcessor;
 import org.elasticsearch.indices.analysis.uk.UkrainianIndicesAnalysisModule;
 import org.elasticsearch.plugins.AbstractPlugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class UkrainianLemmagenPlugin extends AbstractPlugin {
+public class UkrainianLemmatizerPlugin extends AbstractPlugin {
     @Override
     public String name() {
-        return "ukrainian-lemmagen";
+        return "ukrainian-lemmatizer";
     }
 
     @Override
     public String description() {
-        return "Ukrainian lemmagen analysis support";
+        return "Ukrainian lemmatizer analysis support";
     }
 
     @Override
@@ -28,6 +28,6 @@ public class UkrainianLemmagenPlugin extends AbstractPlugin {
     }
 
     public void onModule(AnalysisModule module) {
-        module.addProcessor(new UkrainianLemmagenBinderProcessor());
+        module.addProcessor(new UkrainianLemmatizerBinderProcessor());
     }
 }

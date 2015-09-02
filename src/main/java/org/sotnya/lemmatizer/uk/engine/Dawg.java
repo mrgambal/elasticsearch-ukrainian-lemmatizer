@@ -1,4 +1,4 @@
-package org.sotnya.lemmagen.uk.engine;
+package org.sotnya.lemmatizer.uk.engine;
 
 /*
 * Gently taken from https://github.com/rttlesnke/dawg-java
