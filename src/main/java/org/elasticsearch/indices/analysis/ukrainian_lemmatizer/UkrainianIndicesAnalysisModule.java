@@ -1,4 +1,4 @@
-package org.elasticsearch.indices.analysis.uk;
+package org.elasticsearch.indices.analysis.ukrainian_lemmatizer;
 
 import org.elasticsearch.common.inject.AbstractModule;
 

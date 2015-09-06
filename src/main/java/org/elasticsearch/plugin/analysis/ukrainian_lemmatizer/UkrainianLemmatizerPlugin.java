@@ -1,9 +1,9 @@
-package org.elasticsearch.plugin.analysis.uk;
+package org.elasticsearch.plugin.analysis.ukrainian_lemmatizer;
 
 import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.index.analysis.AnalysisModule;
-import org.elasticsearch.index.analysis.uk.UkrainianLemmatizerBinderProcessor;
-import org.elasticsearch.indices.analysis.uk.UkrainianIndicesAnalysisModule;
+import org.elasticsearch.index.analysis.ukrainian_lemmatizer.UkrainianLemmatizerBinderProcessor;
+import org.elasticsearch.indices.analysis.ukrainian_lemmatizer.UkrainianIndicesAnalysisModule;
 import org.elasticsearch.plugins.AbstractPlugin;
 
 import java.util.ArrayList;

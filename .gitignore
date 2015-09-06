@@ -1,6 +1,6 @@
-build
+build/
 .gradle/
 .DS_Store
 *.iml
 .idea/
-build/
+data/

@@ -10,8 +10,7 @@ curl -XPUT "http://localhost:9200/ukrainian/" -d '
          "analysis":{
             "analyzer":{
                "ukrainian":{
-                  "tokenizer": "standard",
-                  "filter": ["standard", "lowercase", "ukrainian_lemmagen"]
+                  "type": "ukrainian"
                }
             }
          }

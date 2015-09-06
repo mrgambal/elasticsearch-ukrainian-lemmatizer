@@ -1,4 +1,4 @@
-package org.elasticsearch.index.analysis.uk;
+package org.elasticsearch.index.analysis.ukrainian_lemmatizer;
 
 import java.io.IOException;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package org.elasticsearch.indices.analysis.uk;
+package org.elasticsearch.indices.analysis.ukrainian_lemmatizer;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.elasticsearch.common.component.AbstractComponent;
@@ -8,7 +8,7 @@ import org.elasticsearch.index.analysis.AnalyzerScope;
 import org.elasticsearch.index.analysis.PreBuiltAnalyzerProviderFactory;
 import org.elasticsearch.index.analysis.PreBuiltTokenFilterFactoryFactory;
 import org.elasticsearch.index.analysis.TokenFilterFactory;
-import org.elasticsearch.index.analysis.uk.UkrainianLemmatizerTokenFilter;
+import org.elasticsearch.index.analysis.ukrainian_lemmatizer.UkrainianLemmatizerTokenFilter;
 import org.elasticsearch.indices.analysis.IndicesAnalysisService;
 import org.sotnya.lemmatizer.uk.engine.UkrainianLemmatizer;
 
