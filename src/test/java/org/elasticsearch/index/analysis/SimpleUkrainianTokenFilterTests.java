@@ -51,12 +51,22 @@ import static org.hamcrest.Matchers.equalTo;
 public class SimpleUkrainianTokenFilterTests extends ElasticsearchTestCase {
 
     @Test
-    public void testBasicUsage() throws Exception {
+    public void testTokenFilter() throws Exception {
         testToken("цямруймось", "цямруватися");
         testToken("статечної", "статечний");
+        // apostrophe 2019
         testToken("любимо-мар'ївського", "любимо-мар'ївський");
+        // apostrophe U+02BC
+        testToken("любимо-марʼївського", "любимо-мар'ївський");
         testToken("стросс-кану", "стросс-кан");
+    }
+
+    @Test
+    public void testAnalyzer() throws Exception {
+        // apostrophe 2019
         testAnalyzer("б'ю іменинника", "бити", "іменинник");
+        // apostrophe U+02BC
+        testAnalyzer("бʼю іменинника", "бити", "іменинник");
     }
 
     private void testToken(String source, String expected) throws IOException {

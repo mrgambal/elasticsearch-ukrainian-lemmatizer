@@ -7,10 +7,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Class to serve purposes of term-to-lemma substitution.
+ * Handles mapping retrieval, terms normalisation and lookup for proper lemmas in mapping.
+ */
 public class UkrainianLemmatizer {
     private static final Map<String, String> dictionary;
 
     static {
+        // load mapping from file (must be changed to faster and memory-efficient type)
         final InputStream is = UkrainianLemmatizer.class.getClassLoader().getResourceAsStream("mapping_sorted.csv");
         final String separator = ",";
 
@@ -23,13 +28,15 @@ public class UkrainianLemmatizer {
         }
     }
 
+    /**
+     * @param termAtt Token (word) we should compare with existing in our dictionary
+     *                Before that we replace ukrainian apostrophes with to english
+     *                single quote is being used in mapping.
+     * @return Optional value which is defined in case if we have related lemma in dict.
+     */
     public Optional<CharSequence> lemmatize(CharTermAttribute termAtt) {
-        // replace ukrainian apostrophe to english single quote is being used in mapping
-        final String term = termAtt.toString().replace('’', '\'');
+        final String term = termAtt.toString().replace('’', '\'').replace('ʼ', '\'');
 
-        if (dictionary.containsKey(term)) {
-            return Optional.of(dictionary.get(term));
-        } else
-            return Optional.empty();
+        return dictionary.containsKey(term) ? Optional.of(dictionary.get(term)) : Optional.empty();
     }
 }
