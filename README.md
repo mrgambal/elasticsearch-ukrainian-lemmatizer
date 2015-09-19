@@ -14,7 +14,9 @@ Installation of the plugin consists of only 4 steps:
  * Clone this repository
  * Get inside the root dir of cloned repo and run ```gradle release```
  * Find built artifact in ```build/distributions/```
- * Import it into your ES installation with ```<pathh_to_es_bin_dir>/plugin --url <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
+ * Import it into your ES installation with ```<path_to_es_bin_dir>/plugin --url <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
+ 
+**Example**: ```./plugin --url file:///home/mrgambal/projects/elasticsearch-ukrainian-lemmagen/build/distributions/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
 
 
 ## Usage
@@ -41,6 +43,49 @@ curl -XPUT "http://localhost:9200/ukrainian/" -d '
 '
 ```
 
+Then we create some simple mapping:
+
+```bash
+# Define mapping
+curl -XPOST "http://localhost:9200/ukrainian/user/_mapping" -d '
+{
+   "user":{
+      "_all":{
+         "analyzer":"ukrainian"
+      },
+      "properties":{
+         "test":{
+            "type":"string",
+            "analyzer":"ukrainian"
+         }
+      }
+   }
+}
+'
+```
+
+And fill the index with sample data:
+
+```bash
+# Create Documents
+curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
+{
+   "test":"гусятам"
+}'
+curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
+{
+   "test":"підострожує"
+}'
+curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
+{
+   "test":"гусяти"
+}'
+curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
+{
+   "test":"п’яничка"
+}'
+```
+
 Having that done and filled this index with some data we may query it using the same analyzer:
 
 ```bash
@@ -59,7 +104,42 @@ curl -XPOST "http://localhost:9200/ukrainian/user/_search?pretty=true" -d '
 '
 ```
 
-**Notice** you may find complete example in ```test.sh``` inside the repository: you may use it for testing of serviceability of the plugin after you install it.
+And here is what you'll receive:
+
+```json
+{
+    "took": 111,
+    "timed_out": false,
+    "_shards": {
+        "total": 5,
+        "successful": 5,
+        "failed": 0
+    },
+    "hits": {
+        "total": 2,
+        "max_score": 1.0,
+        "hits": [{
+            "_index": "ukrainian",
+            "_type": "user",
+            "_id": "AU_mWjT6wMGwUI93ytgK",
+            "_score": 1.0,
+            "_source": {
+                "test": "гусяти"
+            }
+        }, {
+            "_index": "ukrainian",
+            "_type": "user",
+            "_id": "AU_mWicgwMGwUI93ytgI",
+            "_score": 0.30685282,
+            "_source": {
+                "test": "гусятам"
+            }
+        }]
+    }
+}
+```
+
+**Notice** you may find this particular example in ```test.sh``` inside the repository: you may use it for testing of serviceability of the plugin after you install it.
 
 ## Requirements
 

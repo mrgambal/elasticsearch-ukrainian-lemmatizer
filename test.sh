@@ -47,7 +47,7 @@ curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
 }'
 curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
 {
-   "test":"Сергій"
+   "test":"гусяти"
 }'
 curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
 {
