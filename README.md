@@ -145,4 +145,4 @@ And here is what you'll receive:
 
 * ES 1.7+
 * Java 8
-* Gradle
+* Gradle 2.6+

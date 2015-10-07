@@ -20,8 +20,8 @@
 package org.elasticsearch.index.analysis;
 
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeResponse;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.plugins.PluginsService;
 import org.elasticsearch.test.ElasticsearchIntegrationTest;
@@ -58,7 +58,7 @@ public class SimpleUkrainianIntegrationTests extends ElasticsearchIntegrationTes
     @Test
     public void testUkrainianLemmatizerTokenFilter() throws ExecutionException, InterruptedException {
         AnalyzeResponse response = client().admin().indices()
-                .prepareAnalyze("імператора").setTokenFilters("ukrainian_lemmatizer")
+                .prepareAnalyze("конденсаторної").setTokenFilters("ukrainian_lemmatizer")
                 .execute().get();
 
         assertThat(response, notNullValue());
@@ -80,7 +80,7 @@ public class SimpleUkrainianIntegrationTests extends ElasticsearchIntegrationTes
 
         client().admin().indices().prepareCreate("test").addMapping("type", mapping).get();
 
-        index("test", "type", "1", "foo", "б'ю іменинника");
+        index("test", "type", "1", "foo", "б'ючи іменинника");
 
         ensureYellow();
     }
