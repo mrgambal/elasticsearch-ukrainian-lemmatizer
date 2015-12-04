@@ -7,16 +7,25 @@ The plugin provides a capability to search across documents, written in ukrainia
 The thing is, it makes you able to index not the source's words but their lemmas (lemma – canonical form of word) and also perform a lookup using different forms of the same word which will return you what you're looking for. Needless to say, the magic is being done under the hood! No more doubts like: "What if I put this word in plural? Maybe it'll finally find something?".
 Each term before settling in the storage will be passed through ```UkrainianAnalyzer``` which looks in ```UkrainianLemmatizer``` if it has a lemma for the term and, in case of success, this lemma must get into index. The same sequence of actions has the place when you start a lookup over documents stored using the analyzer: it will convert your search terms according to dictionary and return results if there is any match.
 
-## Installation
+## Build the plugin
 
-Installation of the plugin consists of only 4 steps:
+Manual building of the plugin consists of only 4 steps:
 
+### For ES version 1.7+
  * Clone this repository
  * Get inside the root dir of cloned repo and run ```gradle release```
  * Find built artifact in ```build/distributions/```
  * Import it into your ES installation with ```<path_to_es_bin_dir>/plugin --url <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
  
 **Example**: ```./plugin --url file:///home/mrgambal/projects/elasticsearch-ukrainian-lemmagen/build/distributions/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
+
+### For ES version 2.0.0-2.0.1
+ * Clone this repository
+ * Get inside the root dir of cloned repo and run ```gradle release```
+ * Find built artifact in ```build/distributions/```
+ * Import it into your ES installation with ```<path_to_es_bin_dir>/plugin install <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-<plugin_version>.zip```
+ 
+**Example**: ```./plugin install file:/home/tenshi/projects/elasticsearch-ukrainian-lemmagen/build/distributions/elasticsearch-ukrainian-lemmatizer-1.1.0.zip```
 
 
 ## Usage
@@ -143,6 +152,9 @@ And here is what you'll receive:
 
 ## Requirements
 
-* ES 1.7+
+* ES 
+    - 1.7+ (release v1.0)
+    - 2.0.0 (release v1.1.0)
+    - 2.0.1 (release v1.1.1)
 * Java 8
 * Gradle 2.6+
