@@ -12,12 +12,10 @@ import org.apache.lucene.analysis.util.StopwordAnalyzerBase;
 import org.elasticsearch.index.analysis.ukrainian_lemmatizer.UkrainianLemmatizerTokenFilter;
 import org.sotnya.lemmatizer.uk.engine.UkrainianLemmatizer;
 
-import java.io.Reader;
-
 public class UkrainianAnalyzer extends StopwordAnalyzerBase {
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-        final Tokenizer source = new StandardTokenizer(reader);
+    protected TokenStreamComponents createComponents(String fieldName) {
+        final Tokenizer source = new StandardTokenizer();
         TokenStream result = new StandardFilter(source);
 
         result = new LowerCaseFilter(result);

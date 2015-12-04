@@ -8,10 +8,7 @@ curl -XPUT "http://localhost:9200/ukrainian/" -d '
    "settings":{
       "index":{
          "analysis":{
-            "analyzer":{
-               "ukrainian":{
-                  "type": "ukrainian"
-               }
+            "analyzer":"ukrainian"
             }
          }
       }
