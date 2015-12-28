@@ -1,15 +1,24 @@
 package org.elasticsearch.plugin.analysis.ukrainian_lemmatizer;
 
+import org.elasticsearch.common.component.LifecycleComponent;
 import org.elasticsearch.common.inject.Module;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.indices.analysis.ukrainian_lemmatizer.UkrainianIndicesAnalysisModule;
 import org.elasticsearch.plugins.Plugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 public class UkrainianLemmatizerPlugin extends Plugin {
     private final static String NAME = "ukrainian-lemmatizer";
     private final static String DESCRIPTION = "Ukrainian lemmatizer analysis support";
+
+    private final Settings settings;
+
+    public UkrainianLemmatizerPlugin(Settings settings) {
+        this.settings = settings;
+    }
 
     @Override
     public String name() {
@@ -23,9 +32,16 @@ public class UkrainianLemmatizerPlugin extends Plugin {
 
     @Override
     public Collection<Module> nodeModules() {
-        Collection<Module> classes = new ArrayList<>();
-        classes.add(new UkrainianIndicesAnalysisModule());
+        return Collections.<Module>singletonList(new UkrainianIndicesAnalysisModule());
+    }
 
-        return classes;
+    @Override
+    public Collection<Class<? extends LifecycleComponent>> nodeServices() {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Settings additionalSettings() {
+        return Settings.EMPTY;
     }
 }
