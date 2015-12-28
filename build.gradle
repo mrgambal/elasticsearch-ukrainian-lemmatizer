@@ -3,7 +3,7 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 
 group = 'org.sotnya'
-version = '1.0-SNAPSHOT'
+version = '1.0.1'
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
@@ -19,11 +19,11 @@ repositories {
 }
 
 dependencies {
-    compile 'org.elasticsearch:elasticsearch:1.7.1'
+    compile 'org.elasticsearch:elasticsearch:1.7.4'
     compile 'junit:junit:4.12'
 
     testCompile 'org.apache.lucene:lucene-test-framework:4.10.4'
-    testCompile 'org.elasticsearch:elasticsearch:1.7.1:tests'
+    testCompile 'org.elasticsearch:elasticsearch:1.7.4:tests'
     testCompile 'com.google.guava:guava:18.0'
     testCompile 'com.carrotsearch.randomizedtesting:randomizedtesting-runner:2.1.14'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
