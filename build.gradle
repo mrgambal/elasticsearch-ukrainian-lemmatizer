@@ -1,41 +1,43 @@
-apply plugin: 'java'
-apply plugin: 'groovy'
-apply plugin: 'maven'
+apply plugin: "java"
+apply plugin: "groovy"
+apply plugin: "maven"
 
-group = 'org.sotnya'
-version = '1.1.2'
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
-String propertiesFile = './plugin-descriptor.properties'
-
+group = "org.sotnya"
+version = "1.1.3"
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+String propertiesFile = "./plugin-descriptor.properties"
 
 description = """Ukrainian lemmatizer plugin for ElasticSearch"""
 
 repositories {
-    mavenLocal()
+    mavenCentral()
 
     maven { url "https://oss.sonatype.org/content/repositories/releases" }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-    maven { url "http://repo.maven.apache.org/maven2" }
 }
 
 dependencies {
-    compile 'org.elasticsearch:elasticsearch:2.0.2'
-    compile 'junit:junit:4.12'
+    compile group: "org.elasticsearch", name: "elasticsearch", version: "2.0.2"
 
-    testCompile 'org.apache.lucene:lucene-test-framework:5.2.1'
-    testCompile 'org.elasticsearch:elasticsearch:2.0.2:tests'
-    testCompile 'com.google.guava:guava:19.0'
-    testCompile 'com.carrotsearch.randomizedtesting:randomizedtesting-runner:2.3.1'
-    testCompile 'org.hamcrest:hamcrest-library:1.3'
-    testCompile 'net.java.dev.jna:jna:4.2.1'
+    testCompile group: "junit", name: "junit", version: "4.12"
+    testCompile group: "org.apache.lucene", name: "lucene-test-framework", version: "5.2.1"
+    testCompile group: "org.elasticsearch", name: "elasticsearch", version: "2.0.2", classifier: "tests"
+    testCompile group: "org.hamcrest", name: "hamcrest-library", version: "1.3"
+    testCompile group: "net.java.dev.jna", name: "jna", version: "4.2.1"
 }
 
-File explodedDistDir = new File(distsDir, 'exploded')
+sourceSets {
+    test {
+        resources.srcDir new File('src/main/resources')
+    }
+}
+
+File explodedDistDir = new File(distsDir, "exploded")
 
 jar.manifest.mainAttributes("Implementation-Title": "ElasticSearch::Plugins::Analysis::UkrainianLemmatizer", "Implementation-Version": rootProject.version, "Implementation-Date": new Date().format("yyyy-MM-dd HH:mm:ss"))
 
-task explodedDist(dependsOn: [jar], description: 'Builds the plugin zip file') << {
+task explodedDist(dependsOn: [jar], description: "Builds the plugin zip file") << {
     [explodedDistDir]*.mkdirs()
 
     copy {
@@ -73,7 +75,7 @@ task explodedDist(dependsOn: [jar], description: 'Builds the plugin zip file') <
     }
 }
 
-task zip(type: Zip, dependsOn: ['explodedDist']) {
+task zip(type: Zip, dependsOn: ["explodedDist"]) {
     from(explodedDistDir) {
     }
 }
@@ -83,8 +85,10 @@ task release(dependsOn: [zip]) << {
 }
 
 test {
-    // show standard out and standard error of the test JVM(s) on the console
-    testLogging.showStandardStreams = true
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = "full"
+    }
 
     // listen to events in the test execution lifecycle
     beforeTest { descriptor ->

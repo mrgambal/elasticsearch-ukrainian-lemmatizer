@@ -7,11 +7,14 @@ import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.KeywordAttribute;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.elasticsearch.common.logging.ESLogger;
+import org.elasticsearch.common.logging.ESLoggerFactory;
 
 import org.sotnya.lemmatizer.uk.engine.UkrainianLemmatizer;
 
 public class UkrainianLemmatizerTokenFilter extends TokenFilter {
     private UkrainianLemmatizer lemmatizer = null;
+    private final ESLogger logger = ESLoggerFactory.getLogger(this.getClass().getSimpleName());
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private final KeywordAttribute keywordAttr = addAttribute(KeywordAttribute.class);
 
@@ -30,12 +33,16 @@ public class UkrainianLemmatizerTokenFilter extends TokenFilter {
             return false;
         }
 
+        logger.debug(String.format("Looking for term %s.", termAtt));
+
         Optional<CharSequence> lemma = lemmatizer.lemmatize(termAtt);
 
         if (lemma.isPresent()) {
-            if(!keywordAttr.isKeyword() && !equalCharSequences(lemma.get(), termAtt)) {
+            if (!keywordAttr.isKeyword() && !equalCharSequences(lemma.get(), termAtt)) {
                 termAtt.setEmpty().append(lemma.get());
             }
+
+            logger.debug(String.format("Found lemma %s", lemma.get()));
         }
 
         return true;
@@ -46,9 +53,8 @@ public class UkrainianLemmatizerTokenFilter extends TokenFilter {
      */
     private boolean equalCharSequences(CharSequence s1, CharSequence s2) {
         int len1 = s1.length();
-        int len2 = s2.length();
 
-        if (len1 != len2) return false;
+        if (len1 != s2.length()) return false;
 
         for (int i = len1; --i >= 0; ) {
             if (s1.charAt(i) != s2.charAt(i)) {
