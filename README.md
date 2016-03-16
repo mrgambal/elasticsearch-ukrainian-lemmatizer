@@ -9,13 +9,15 @@ Each term before settling in the storage will be passed through ```UkrainianAnal
 
 ## Get plugin
 
+**Note**: I won't release a build for ES 2.2.0 due to ugly [bug][permissions].
+
 You always can get latest ready-to-go builds on the [Releases page][releases].
 Download the zip-file with the corresponding version of ES supported and install it with:
 
 ### ES 1.7.+
 ```<path_to_es_bin_dir>/plugin --url <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
 
-### ES 2.0.0-2.1.0
+### ES 2.0.0-2.2.1
 ```<path_to_es_bin_dir>/plugin install <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-<plugin_version>.zip```
 
 ## Build the plugin
@@ -30,7 +32,7 @@ Manual building of the plugin consists of only 4 steps:
  
 **Example**: ```./plugin --url file:///home/mrgambal/projects/elasticsearch-ukrainian-lemmagen/build/distributions/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
 
-### For ES version 2.0.0-2.1.0
+### For ES version 2.0.0-2.2.1
  * Clone this repository
  * Get inside the root dir of cloned repo and run ```gradle release```
  * Find built artifact in ```build/distributions/```
@@ -172,3 +174,4 @@ And here is what you'll receive:
 * Gradle 2.6+
 
 [releases]: https://github.com/mrgambal/elasticsearch-ukrainian-lemmatizer/releases "Plugin releases"
+[permissions]: https://github.com/elastic/elasticsearch/issues/16459 "Control access issue"
