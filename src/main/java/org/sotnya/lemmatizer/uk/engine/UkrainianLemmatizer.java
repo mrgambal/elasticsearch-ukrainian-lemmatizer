@@ -62,11 +62,15 @@ public class UkrainianLemmatizer {
         String term = termAtt.toString();
 
         for (Map.Entry<Character, Character> e : replaceItems.entrySet()) {
-            term = term.replace(e.getKey(), e.getValue());
+            if( term.indexOf(e.getKey()) != -1 ) {
+                term = term.replace(e.getKey(), e.getValue());
+            }
         }
 
         for (String ignoreChar: IGNORE_CHARS) {
-            term = term.replace(ignoreChar, "");
+            if( term.contains(ignoreChar) ) {
+                term = term.replace(ignoreChar, "");
+            }
         }
 
         return dictionary.containsKey(term) ? Optional.of(dictionary.get(term)) : Optional.empty();
