@@ -25,6 +25,11 @@ public class UkrainianLemmatizer {
         put('’', '\'');
         put('ʼ', '\'');
     }};
+    /**
+     * Ignore stress symbol
+     */
+    private static final String[] IGNORE_CHARS = new String[] { "\u0301" };
+
 
     static {
         // load mapping from file (must be changed to faster and memory-efficient type)
@@ -58,6 +63,10 @@ public class UkrainianLemmatizer {
 
         for (Map.Entry<Character, Character> e : replaceItems.entrySet()) {
             term = term.replace(e.getKey(), e.getValue());
+        }
+
+        for (String ignoreChar: IGNORE_CHARS) {
+            term = term.replace(ignoreChar, "");
         }
 
         return dictionary.containsKey(term) ? Optional.of(dictionary.get(term)) : Optional.empty();
