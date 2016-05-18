@@ -22,13 +22,16 @@ public class UkrainianLemmatizer {
      * Right now there is the single substitution case: ukrainian apostrophes with to english single quote.
      */
     private static final Map<Character, Character> replaceItems = new HashMap<Character, Character>(2) {{
-        put('’', '\'');
-        put('ʼ', '\'');
+        put('\u2019', '\'');
+        put('\u02BC', '\'');
     }};
+
     /**
      * Ignore stress symbol
      */
-    private static final String[] IGNORE_CHARS = new String[] { "\u0301" };
+    private static final String[] IGNORE_CHARS = new String[] {
+        "\u0301"
+    };
 
 
     static {
@@ -62,9 +65,7 @@ public class UkrainianLemmatizer {
         String term = termAtt.toString();
 
         for (Map.Entry<Character, Character> e : replaceItems.entrySet()) {
-            if( term.indexOf(e.getKey()) != -1 ) {
-                term = term.replace(e.getKey(), e.getValue());
-            }
+            term = term.replace(e.getKey(), e.getValue());
         }
 
         for (String ignoreChar: IGNORE_CHARS) {
