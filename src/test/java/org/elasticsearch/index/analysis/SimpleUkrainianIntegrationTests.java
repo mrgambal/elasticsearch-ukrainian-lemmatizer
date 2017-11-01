@@ -45,17 +45,17 @@ public class SimpleUkrainianIntegrationTests extends ESIntegTestCase {
     }
 
     @Test
-    public void testUkrainianAnalyzerInMapping() throws ExecutionException, InterruptedException, IOException {
+    public void testUkrainianAnalyzerInMapping() throws IOException {
         final XContentBuilder mapping = jsonBuilder().startObject()
-            .startObject("type")
+                .startObject("type")
                 .startObject("properties")
-                    .startObject("foo")
-                        .field("type", "string")
-                        .field("analyzer", "ukrainian")
-                    .endObject()
+                .startObject("foo")
+                .field("type", "string")
+                .field("analyzer", "ukrainian")
                 .endObject()
-            .endObject()
-            .endObject();
+                .endObject()
+                .endObject()
+                .endObject();
 
         client().admin().indices().prepareCreate("test").addMapping("type", mapping).get();
 

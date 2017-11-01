@@ -1,5 +1,4 @@
 apply plugin: "java"
-apply plugin: "groovy"
 apply plugin: "maven"
 
 group = "org.sotnya"
@@ -21,7 +20,7 @@ dependencies {
     compile group: "org.elasticsearch", name: "elasticsearch", version: "2.3.3"
 
     testCompile group: "junit", name: "junit", version: "4.12"
-    testCompile group: "net.java.dev.jna", name: "jna", version: "4.2.2"
+    testCompile group: "net.java.dev.jna", name: "jna", version: "4.5.0"
     testCompile group: "org.apache.lucene", name: "lucene-test-framework", version: "5.5.0"
     testCompile group: "org.elasticsearch", name: "elasticsearch", version: "2.3.3", classifier: "tests"
     testCompile group: "org.hamcrest", name: "hamcrest-library", version: "1.3"
@@ -34,44 +33,44 @@ jar.manifest.mainAttributes(
         "Implementation-Version": rootProject.version,
         "Implementation-Date": new Date().format("yyyy-MM-dd HH:mm:ss"))
 
-task explodedDist(dependsOn: [jar], description: "Builds the plugin zip file") << {
-    [explodedDistDir]*.mkdirs()
+task explodedDist(dependsOn: [jar], description: "Builds the plugin zip file") {
+    doLast {
+        [explodedDistDir]*.mkdirs()
 
-    copy {
-        from configurations.compile
-        into explodedDistDir
-    }
+        copy {
+            from configurations.compile
+            into explodedDistDir
+        }
 
-    ant.delete { fileset(dir: explodedDistDir, includes: "asm*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "antlr*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "compress*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "commons-cli*.jar") }
-    ant.delete {
-        fileset(dir: explodedDistDir, includes: "elasticsearch-*.jar")
-    }
-    ant.delete { fileset(dir: explodedDistDir, includes: "guava*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "hamcrest*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "HdrHistogram*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "hppc*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "jackson*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "joda*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "jsr*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "junit*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "lucene-*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "netty-*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "securesm*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "snakeyaml*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "spatial4j-*.jar") }
-    ant.delete { fileset(dir: explodedDistDir, includes: "t-digest*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "asm*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "antlr*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "compress*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "commons-cli*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "elasticsearch-*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "guava*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "hamcrest*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "HdrHistogram*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "hppc*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "jackson*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "joda*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "jsr*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "junit*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "lucene-*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "netty-*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "securesm*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "snakeyaml*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "spatial4j-*.jar") }
+        ant.delete { fileset(dir: explodedDistDir, includes: "t-digest*.jar") }
 
-    copy {
-        from libsDir
-        into explodedDistDir
-    }
+        copy {
+            from libsDir
+            into explodedDistDir
+        }
 
-    copy {
-        from propertiesFile
-        into explodedDistDir
+        copy {
+            from propertiesFile
+            into explodedDistDir
+        }
     }
 }
 
@@ -80,12 +79,14 @@ task zip(type: Zip, dependsOn: ["explodedDist"]) {
     }
 }
 
-task release(dependsOn: [zip]) << {
-    ant.delete(dir: explodedDistDir)
+task release(dependsOn: [zip]) {
+    doLast {
+        ant.delete(dir: explodedDistDir)
+    }
 }
 
 test {
-    jvmArgs '-Dtests.security.manager=false'
+    systemProperty 'tests.security.manager', 'false'
     // show standard out and standard error of the test JVM(s) on the console
     testLogging.showStandardStreams = true
 
