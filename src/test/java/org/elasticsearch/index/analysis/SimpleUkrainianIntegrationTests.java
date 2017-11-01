@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
@@ -20,7 +21,7 @@ public class SimpleUkrainianIntegrationTests extends ESIntegTestCase {
 
     @Override
     protected Collection<Class<? extends Plugin>> nodePlugins() {
-        return pluginList(UkrainianLemmatizerPlugin.class);
+        return Collections.singleton(UkrainianLemmatizerPlugin.class);
     }
 
     @Test
