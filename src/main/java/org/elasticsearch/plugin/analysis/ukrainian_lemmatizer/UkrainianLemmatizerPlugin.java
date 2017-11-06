@@ -32,7 +32,7 @@ public class UkrainianLemmatizerPlugin extends Plugin {
 
     @Override
     public Collection<Module> nodeModules() {
-        return Collections.<Module>singletonList(new UkrainianIndicesAnalysisModule());
+        return Collections.singletonList(new UkrainianIndicesAnalysisModule());
     }
 
     @Override
