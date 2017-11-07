@@ -3,15 +3,14 @@ apply plugin: "maven"
 
 group = "org.sotnya"
 description = """Ukrainian lemmatizer plugin for ElasticSearch"""
-version = "1.4.2"
+version = "1.5.0"
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 String propertiesFile = "./plugin-descriptor.properties"
-String esVersion = "2.3.5"
-String luceneVersion = "5.5.0"
-
+String esVersion = "2.4.6"
+String luceneVersion = "5.5.4"
 
 repositories {
     mavenCentral()
