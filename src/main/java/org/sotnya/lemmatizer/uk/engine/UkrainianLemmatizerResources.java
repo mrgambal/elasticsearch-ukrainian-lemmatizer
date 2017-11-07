@@ -36,6 +36,14 @@ public class UkrainianLemmatizerResources {
         return UkrainianLemmatizerResources.DefaultSetHolder.DEFAULT_STOP_SET;
     }
 
+    /**
+     * Builds new filter using the dictionary built in morfologik-ukrainian-search package and appends it to the
+     * stream transformation pipeline.
+     *
+     * @param input Stream to be altered.
+     *
+     * @return Base stream with added ukrainian Morfoligik filter.
+     */
     public static TokenStream getUkrainianLemmatizerTokenFilter(TokenStream input) {
         return new MorfologikFilter(input, getDictionary());
     }
