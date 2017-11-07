@@ -1,11 +1,12 @@
-# Ukrainian lemmatizer plugin for ElasticSearch
+# Ukrainian lemmatizer plugin for ElasticSearch [1.7 - 2.x]
 
-The plugin provides a capability to search across documents, written in ukrainian, using words in different forms. 
+The plugin provides a capability for ElasticSearch installations prior to version 5 to search across documents, written in ukrainian, using words in different forms. Starting from version 5.0 ElasticSearch uses [Lucene][Lucene] of version 6.2, which provides support for ukrainian language analysis [out of the box](https://issues.apache.org/jira/browse/LUCENE-7287).
 
 ## Principles
 
 The thing is, it makes you able to index not the source's words but their lemmas (lemma – canonical form of word) and also perform a lookup using different forms of the same word which will return you what you're looking for. Needless to say, the magic is being done under the hood! No more doubts like: "What if I put this word in plural? Maybe it'll finally find something?".
-Each term before settling in the storage will be passed through ```UkrainianAnalyzer``` which looks in ```UkrainianLemmatizer``` if it has a lemma for the term and, in case of success, this lemma must get into index. The same sequence of actions has the place when you start a lookup over documents stored using the analyzer: it will convert your search terms according to dictionary and return results if there is any match.
+Each term before settling in the storage will be passed through the analyzer to check if there is a lemma for the term and, in case of success, this lemma must get into index. The same sequence of actions has the place when you start a lookup over documents stored using the analyzer: it will convert your search terms according to dictionary and return results if there is any match.
+As the source of lemmas the plugin uses the dictionary from [the BrUk project][BrUk].
 
 ## Get plugin
 
@@ -17,7 +18,7 @@ Download the zip-file with the corresponding version of ES supported and install
 ### ES 1.7.+
 ```<path_to_es_bin_dir>/plugin --url <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
 
-### ES 2.0.0-2.2.1
+### ES 2.0.0-2.4.6
 ```<path_to_es_bin_dir>/plugin install <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-<plugin_version>.zip```
 
 ## Build the plugin
@@ -32,7 +33,7 @@ Manual building of the plugin consists of only 4 steps:
  
 **Example**: ```./plugin --url file:///home/mrgambal/projects/elasticsearch-ukrainian-lemmagen/build/distributions/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
 
-### For ES version 2.0.0-2.2.1
+### For ES version 2.0.0-2.4.6
  * Clone this repository
  * Get inside the root dir of cloned repo and run ```gradle release```
  * Find built artifact in ```build/distributions/```
@@ -169,9 +170,18 @@ And here is what you'll receive:
     - 1.7.+ (release v1.0)
     - 2.0.0 (release v1.1.0)
     - 2.0.1 (release v1.1.1)
-    - 2.1.0 (release v1.1.2)
+    - 2.0.2 (release v1.1.3)
+    - 2.1.0 (release v1.2.0)
+    - 2.1.1 (release v1.2.1)
+    - 2.1.2 (release v1.2.2)
+    - 2.2.1 (release v1.3.0)
+    - 2.3.3 (release v1.4.1)
+    - 2.3.5 (release v1.4.2)
+    - 2.4.6 (release v1.5.0)
 * Java 8
 * Gradle 2.6+
 
+[Lucene]: https://github.com/apache/lucene-solr/tree/master/lucene
+[BrUk]: https://github.com/brown-uk/corpus
 [releases]: https://github.com/mrgambal/elasticsearch-ukrainian-lemmatizer/releases "Plugin releases"
 [permissions]: https://github.com/elastic/elasticsearch/issues/16459 "Control access issue"
