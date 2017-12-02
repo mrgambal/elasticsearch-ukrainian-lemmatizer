@@ -1,31 +1,46 @@
 package org.sotnya.lemmatizer.uk.engine;
 
 import morfologik.stemming.Dictionary;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.morfologik.MorfologikFilter;
+import org.apache.lucene.analysis.charfilter.NormalizeCharMap;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.analysis.util.WordlistLoader;
 import org.apache.lucene.util.IOUtils;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
-import org.elasticsearch.indices.analysis.ukrainian_lemmatizer.UkrainianAnalyzer;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Class to serve purposes of term-to-lemma substitution.
- * Handles mapping retrieval, terms normalisation and lookup for proper lemmas in mapping.
+ * Serves purposes of safe loading of static resources and providing them to other parts of the application.
  */
 public class UkrainianLemmatizerResources {
     /**
      * File containing default Ukrainian stopwords.
      */
     private static final String DEFAULT_STOPWORD_FILE = "stopwords.txt";
-    private static final String DICT_FILE_PATH = "ua/net/nlp/ukrainian.dict";
+    /**
+     * Path to the file that contains the actual mapping.
+     * The file stored within the `morfologik-ukrainian-search` package.
+     */
+    private static final String DICTIONARY_FILE_PATH = "ua/net/nlp/ukrainian.dict";
 
     private static final ESLogger LOGGER = ESLoggerFactory.getLogger(UkrainianLemmatizerResources.class.getSimpleName());
+
+    public static final NormalizeCharMap NORMALIZE_MAP = new NormalizeCharMap.Builder() {{
+        // different apostrophes
+        add("\u2019", "'");
+        add("\u2018", "'");
+        add("\u02BC", "'");
+        add("`", "'");
+        add("´", "'");
+        // ignored characters
+        add("\u0301", "");
+        add("\u00AD", "");
+        add("ґ", "г");
+        add("Ґ", "Г");
+    }}.build();
 
     /**
      * Returns an unmodifiable instance of the default stop words set.
@@ -33,45 +48,7 @@ public class UkrainianLemmatizerResources {
      * @return default stop words set.
      */
     public static CharArraySet getDefaultStopSet() {
-        return UkrainianLemmatizerResources.DefaultSetHolder.DEFAULT_STOP_SET;
-    }
-
-    /**
-     * Builds new filter using the dictionary built in morfologik-ukrainian-search package and appends it to the
-     * stream transformation pipeline.
-     *
-     * @param input Stream to be altered.
-     *
-     * @return Base stream with added ukrainian Morfoligik filter.
-     */
-    public static TokenStream getUkrainianLemmatizerTokenFilter(TokenStream input) {
-        return new MorfologikFilter(input, getDictionary());
-    }
-
-    /**
-     * Atomically loads the DEFAULT_STOP_SET in a lazy fashion once the outer class
-     * accesses the static final set the first time.;
-     */
-    private static class DefaultSetHolder {
-        static final CharArraySet DEFAULT_STOP_SET;
-
-        static {
-            try {
-                final Reader decodingReader = IOUtils.getDecodingReader(
-                        UkrainianLemmatizerResources.class.getClassLoader().getResourceAsStream(DEFAULT_STOPWORD_FILE),
-                        StandardCharsets.UTF_8);
-
-                DEFAULT_STOP_SET = WordlistLoader.getSnowballWordSet(decodingReader);
-
-
-                if (LOGGER.isDebugEnabled())
-                    LOGGER.debug("The stop-set has been loaded.");
-            } catch (IOException | NullPointerException ex) {
-                // default set should always be present as it is part of the
-                // distribution (JAR)
-                throw new RuntimeException("Unable to load default stopword set");
-            }
-        }
+        return DefaultsHolder.DEFAULT_STOP_SET;
     }
 
     /**
@@ -80,19 +57,47 @@ public class UkrainianLemmatizerResources {
      *
      * @return New instance of morfologik {@link Dictionary} to be used in token filters.
      */
-    private static Dictionary getDictionary() {
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("Started loading the ukrainian dictionary.");
+    public static Dictionary getDictionary() {
+        return DefaultsHolder.DEFAULT_DICTIONARY;
+    }
 
-        try {
-            Dictionary dict = Dictionary.read(UkrainianAnalyzer.class.getClassLoader().getResource(DICT_FILE_PATH));
+    /**
+     * Atomically loads the DEFAULT_STOP_SET and DEFAULT_DICTIONARY in a lazy fashion once the outer class
+     * accesses the static final set the first time.;
+     */
+    private static class DefaultsHolder {
+        static final CharArraySet DEFAULT_STOP_SET;
+        static final Dictionary DEFAULT_DICTIONARY;
+
+        static {
+            final ClassLoader loader = DefaultsHolder.class.getClassLoader();
+
+            try {
+                final Reader decodingReader = IOUtils.getDecodingReader(
+                        loader.getResourceAsStream(DEFAULT_STOPWORD_FILE),
+                        StandardCharsets.UTF_8);
+
+                DEFAULT_STOP_SET = WordlistLoader.getSnowballWordSet(decodingReader);
+
+                if (LOGGER.isDebugEnabled())
+                    LOGGER.debug("The stop-set has been loaded.");
+            } catch (IOException | NullPointerException ex) {
+                // default set should always be present as it is part of the
+                // distribution (JAR)
+                throw new RuntimeException("Unable to load default stopword set");
+            }
 
             if (LOGGER.isDebugEnabled())
-                LOGGER.debug("The ukrainian dictionary has been loaded successfully.");
+                LOGGER.debug("Started loading the ukrainian dictionary.");
 
-            return dict;
-        } catch (IOException | NullPointerException e) {
-            throw new RuntimeException(e);
+            try {
+                DEFAULT_DICTIONARY = Dictionary.read(loader.getResource(DICTIONARY_FILE_PATH));
+
+                if (LOGGER.isDebugEnabled())
+                    LOGGER.debug("The ukrainian dictionary has been loaded successfully.");
+            } catch (IOException | NullPointerException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 }

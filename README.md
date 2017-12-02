@@ -4,22 +4,22 @@ The plugin provides a capability for ElasticSearch installations prior to versio
 
 ## Principles
 
-The thing is, it makes you able to index not the source's words but their lemmas (lemma – canonical form of word) and also perform a lookup using different forms of the same word which will return you what you're looking for. Needless to say, the magic is being done under the hood! No more doubts like: "What if I put this word in plural? Maybe it'll finally find something?".
-Each term before settling in the storage will be passed through the analyzer to check if there is a lemma for the term and, in case of success, this lemma must get into index. The same sequence of actions has the place when you start a lookup over documents stored using the analyzer: it will convert your search terms according to dictionary and return results if there is any match.
+The thing is, it makes you able to index not source words but their lemmas (lemma – canonical form of a word), and also perform a lookup using different forms of the same word which will return you what you're looking for. Needless to say, the magic is being done under the hood! No more doubts like: "What if I put this word in plural? Maybe it'll finally find something?".
+Each term before settling in the storage passes through the analyzer to check if there is a lemma for the term and, in case of success, this lemma must get into index. The same sequence of actions has the place when you start a lookup over documents stored using the analyzer: it converts your search terms according to dictionary and return results if there is any match.
 As the source of lemmas the plugin uses the dictionary from [the BrUk project][BrUk].
 
 ## Get plugin
 
-**Note**: I won't release a build for ES 2.2.0 due to ugly [bug][permissions].
+**Note**: I won't release a build for ES 2.2.0 due to an ugly [bug][permissions].
 
 You always can get latest ready-to-go builds on the [Releases page][releases].
-Download the zip-file with the corresponding version of ES supported and install it with:
+Download a zip-file with the corresponding version of ES supported and install it with:
 
 ### ES 1.7.+
-```<path_to_es_bin_dir>/plugin --url <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
+```<path_to_es_bin_dir>/plugin --url file://<path_to_distribution>/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
 
 ### ES 2.0.0-2.4.6
-```<path_to_es_bin_dir>/plugin install <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-<plugin_version>.zip```
+```<path_to_es_bin_dir>/plugin install file:<path_to_distribution>/elasticsearch-ukrainian-lemmatizer-<plugin_version>.zip```
 
 ## Build the plugin
 
@@ -27,16 +27,16 @@ Manual building of the plugin consists of only 4 steps:
 
 ### For ES version 1.7.+
  * Clone this repository
- * Get inside the root dir of cloned repo and run ```gradle release```
- * Find built artifact in ```build/distributions/```
+ * Get inside the root dir of the cloned repo and run ```gradle release```
+ * Find the built artifact in ```build/distributions/```
  * Import it into your ES installation with ```<path_to_es_bin_dir>/plugin --url <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
  
 **Example**: ```./plugin --url file:///home/mrgambal/projects/elasticsearch-ukrainian-lemmagen/build/distributions/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
 
 ### For ES version 2.0.0-2.4.6
  * Clone this repository
- * Get inside the root dir of cloned repo and run ```gradle release```
- * Find built artifact in ```build/distributions/```
+ * Get inside the root dir of the cloned repo and run ```gradle release```
+ * Find the built artifact in ```build/distributions/```
  * Import it into your ES installation with ```<path_to_es_bin_dir>/plugin install <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-<plugin_version>.zip```
  
 **Example**: ```./plugin install file:/home/tenshi/projects/elasticsearch-ukrainian-lemmagen/build/distributions/elasticsearch-ukrainian-lemmatizer-1.1.0.zip```
@@ -44,7 +44,7 @@ Manual building of the plugin consists of only 4 steps:
 
 ## Usage
 
-Here are simple examples of plugin usage which rely on ES HTTP API.
+Here are simple examples of the plugin usage that rely on ES HTTP API.
 First of all we need to create the index which must include our analyzer:
 
 ```bash
@@ -87,7 +87,7 @@ curl -XPOST "http://localhost:9200/ukrainian/user/_mapping" -d '
 '
 ```
 
-And fill the index with sample data:
+And fill the index with a sample data:
 
 ```bash
 # Create Documents

@@ -18,6 +18,7 @@ package org.elasticsearch.index.analysis;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.BaseTokenStreamTestCase;
+import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.indices.analysis.ukrainian_lemmatizer.UkrainianAnalyzer;
 
 import java.io.IOException;
@@ -31,34 +32,34 @@ public class TestUkrainianAnalyzer extends BaseTokenStreamTestCase {
      * Check that UkrainianAnalyzer doesn't discard any numbers
      */
     public void testDigitsInUkrainianCharset() throws IOException {
-        UkrainianAnalyzer ra = new UkrainianAnalyzer();
+        UkrainianAnalyzer ra = new UkrainianAnalyzer(Lucene.VERSION);
         assertAnalyzesTo(ra, "text 1000", new String[]{"text", "1000"});
         ra.close();
     }
 
     public void testReusableTokenStream() throws Exception {
-        Analyzer a = new UkrainianAnalyzer();
+        Analyzer a = new UkrainianAnalyzer(Lucene.VERSION);
         assertAnalyzesTo(a, "Ця п'єса, у свою чергу, рухається по емоційно-напруженому колу за ритм-енд-блюзом.",
                 new String[]{"п'єса", "черга", "рухатися", "емоційно", "напружений", "кола", "коло", "кіл", "ритм", "енд", "блюз"});
         a.close();
     }
 
     public void testSpecialCharsTokenStream() throws Exception {
-        Analyzer a = new UkrainianAnalyzer();
+        Analyzer a = new UkrainianAnalyzer(Lucene.VERSION);
         assertAnalyzesTo(a, "м'яса м'я\u0301са м\u02BCяса м\u2019яса м\u2018яса м`яса",
                 new String[]{"м'ясо", "м'ясо", "м'ясо", "м'ясо", "м'ясо", "м'ясо"});
         a.close();
     }
 
     public void testCapsTokenStream() throws Exception {
-        Analyzer a = new UkrainianAnalyzer();
+        Analyzer a = new UkrainianAnalyzer(Lucene.VERSION);
         assertAnalyzesTo(a, "Цих Чайковського і Ґете.",
                 new String[]{"Чайковське", "Чайковський", "Гете"});
         a.close();
     }
 
     public void testSampleSentence() throws Exception {
-        Analyzer a = new UkrainianAnalyzer();
+        Analyzer a = new UkrainianAnalyzer(Lucene.VERSION);
         assertAnalyzesTo(a, "Це — проект генерування словника з тегами частин мови для української мови.",
                 new String[]{"проект", "генерування", "словник", "тег", "частина", "мова", "українська", "український", "Українська", "мова"});
         a.close();
@@ -68,7 +69,7 @@ public class TestUkrainianAnalyzer extends BaseTokenStreamTestCase {
      * blast some random strings through the analyzer
      */
     public void testRandomStrings() throws Exception {
-        Analyzer analyzer = new UkrainianAnalyzer();
+        Analyzer analyzer = new UkrainianAnalyzer(Lucene.VERSION);
         checkRandomData(random(), analyzer, 1000 * RANDOM_MULTIPLIER);
         analyzer.close();
     }

@@ -15,8 +15,7 @@ public class UkrainianAnalyzerProvider extends AbstractIndexAnalyzerProvider<Ukr
     public UkrainianAnalyzerProvider(Index index, Settings indexSettings, @Assisted String name, @Assisted Settings settings) {
         super(index, indexSettings, name, settings);
 
-        analyzer = new UkrainianAnalyzer();
-        analyzer.setVersion(version);
+        analyzer = new UkrainianAnalyzer(version);
     }
 
     @Override

@@ -1,8 +1,10 @@
 package org.elasticsearch.indices.analysis.ukrainian_lemmatizer;
 
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.morfologik.MorfologikFilter;
 import org.elasticsearch.common.component.AbstractComponent;
 import org.elasticsearch.common.inject.Inject;
+import org.elasticsearch.common.lucene.Lucene;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.analysis.AnalyzerScope;
 import org.elasticsearch.index.analysis.PreBuiltAnalyzerProviderFactory;
@@ -21,24 +23,27 @@ public class UkrainianIndicesAnalysis extends AbstractComponent {
     public UkrainianIndicesAnalysis(Settings settings, IndicesAnalysisService indicesAnalysisService) {
         super(settings);
 
+        final String ANALYZER_KEY = "ukrainian";
+        final String FILTER_KEY = "ukrainian_lemmatizer";
+
         indicesAnalysisService.analyzerProviderFactories().put(
-                "ukrainian",
+                ANALYZER_KEY,
                 new PreBuiltAnalyzerProviderFactory(
-                        "ukrainian",
+                        ANALYZER_KEY,
                         AnalyzerScope.INDICES,
-                        new UkrainianAnalyzer()));
+                        new UkrainianAnalyzer(Lucene.VERSION)));
 
         indicesAnalysisService.tokenFilterFactories().put(
-                "ukrainian_lemmatizer",
+                FILTER_KEY,
                 new PreBuiltTokenFilterFactoryFactory(new TokenFilterFactory() {
                     @Override
                     public String name() {
-                        return "ukrainian_lemmatizer";
+                        return FILTER_KEY;
                     }
 
                     @Override
                     public TokenStream create(TokenStream tokenStream) {
-                        return UkrainianLemmatizerResources.getUkrainianLemmatizerTokenFilter(tokenStream);
+                        return new MorfologikFilter(tokenStream, UkrainianLemmatizerResources.getDictionary());
                     }
                 }));
     }

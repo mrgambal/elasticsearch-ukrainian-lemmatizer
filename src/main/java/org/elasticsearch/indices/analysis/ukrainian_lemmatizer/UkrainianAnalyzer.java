@@ -20,7 +20,6 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.charfilter.MappingCharFilter;
-import org.apache.lucene.analysis.charfilter.NormalizeCharMap;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.miscellaneous.SetKeywordMarkerFilter;
@@ -29,31 +28,35 @@ import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.analysis.util.StopwordAnalyzerBase;
+import org.apache.lucene.util.Version;
 import org.sotnya.lemmatizer.uk.engine.UkrainianLemmatizerResources;
 
 import java.io.Reader;
 
 /**
  * A back-ported version of dictionary-based {@link Analyzer} for Ukrainian.
- * Original file is located [here](https://github.com/apache/lucene-solr/blob/master/lucene/analysis/morfologik/src/java/org/apache/lucene/analysis/uk/UkrainianMorfologikAnalyzer.java)
+ * Original file is located here https://github.com/apache/lucene-solr/blob/master/lucene/analysis/morfologik/src/java/org/apache/lucene/analysis/uk/UkrainianMorfologikAnalyzer.java .
  */
 public final class UkrainianAnalyzer extends StopwordAnalyzerBase {
     private final CharArraySet stemExclusionSet;
 
     /**
      * Builds an analyzer with the default stop words.
+     *
+     * @param version current Lucene version
      */
-    public UkrainianAnalyzer() {
-        this(UkrainianLemmatizerResources.getDefaultStopSet());
+    public UkrainianAnalyzer(Version version) {
+        this(UkrainianLemmatizerResources.getDefaultStopSet(), version);
     }
 
     /**
      * Builds an analyzer with the given stop words.
      *
      * @param stopwords a stopword set
+     * @param version   current Lucene version
      */
-    public UkrainianAnalyzer(CharArraySet stopwords) {
-        this(stopwords, CharArraySet.EMPTY_SET);
+    public UkrainianAnalyzer(CharArraySet stopwords, Version version) {
+        this(stopwords, CharArraySet.EMPTY_SET, version);
     }
 
     /**
@@ -63,30 +66,18 @@ public final class UkrainianAnalyzer extends StopwordAnalyzerBase {
      *
      * @param stopwords        a stopword set
      * @param stemExclusionSet a set of terms not to be stemmed
+     * @param version          current Lucene version
      */
-    public UkrainianAnalyzer(CharArraySet stopwords, CharArraySet stemExclusionSet) {
+    public UkrainianAnalyzer(CharArraySet stopwords, CharArraySet stemExclusionSet, Version version) {
         super(stopwords);
+
+        this.setVersion(version);
         this.stemExclusionSet = CharArraySet.unmodifiableSet(CharArraySet.copy(stemExclusionSet));
     }
 
     @Override
     protected Reader initReader(String fieldName, Reader reader) {
-        NormalizeCharMap normMap = new NormalizeCharMap.Builder() {{
-            // different apostrophes
-            add("\u2019", "'");
-            add("\u2018", "'");
-            add("\u02BC", "'");
-            add("`", "'");
-            add("´", "'");
-            // ignored characters
-            add("\u0301", "");
-            add("\u00AD", "");
-            add("ґ", "г");
-            add("Ґ", "Г");
-        }}.build();
-        reader = new MappingCharFilter(normMap, reader);
-
-        return reader;
+        return new MappingCharFilter(UkrainianLemmatizerResources.NORMALIZE_MAP, reader);
     }
 
     /**
@@ -103,6 +94,7 @@ public final class UkrainianAnalyzer extends StopwordAnalyzerBase {
     protected TokenStreamComponents createComponents(String fieldName) {
         Tokenizer source = new StandardTokenizer();
         TokenStream result = new StandardFilter(source);
+
         result = new LowerCaseFilter(result);
         result = new StopFilter(result, stopwords);
 
@@ -110,7 +102,7 @@ public final class UkrainianAnalyzer extends StopwordAnalyzerBase {
             result = new SetKeywordMarkerFilter(result, stemExclusionSet);
         }
 
-        result = UkrainianLemmatizerResources.getUkrainianLemmatizerTokenFilter(result);
+        result = new MorfologikFilter(result, UkrainianLemmatizerResources.getDictionary());
 
         return new TokenStreamComponents(source, result);
     }
