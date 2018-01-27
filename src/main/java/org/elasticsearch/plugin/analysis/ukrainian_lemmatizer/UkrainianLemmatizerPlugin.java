@@ -2,6 +2,8 @@ package org.elasticsearch.plugin.analysis.ukrainian_lemmatizer;
 
 import org.elasticsearch.common.inject.Module;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.analysis.AnalysisModule;
+import org.elasticsearch.index.analysis.ukrainian_lemmatizer.UkrainianLemmatizerBinderProcessor;
 import org.elasticsearch.indices.analysis.ukrainian_lemmatizer.UkrainianIndicesAnalysisModule;
 import org.elasticsearch.plugins.Plugin;
 
@@ -31,5 +33,15 @@ public class UkrainianLemmatizerPlugin extends Plugin {
     @Override
     public Collection<Module> nodeModules() {
         return Collections.singletonList(new UkrainianIndicesAnalysisModule());
+    }
+
+    /**
+     * Provides the availability to use the analyser within the custom analysis settings on per-index basis.
+     * IntelliJ though marks it as unused.
+     *
+     * @param module Current analysis module within the scope's injector.
+     */
+    public void onModule(AnalysisModule module) {
+        module.addProcessor(new UkrainianLemmatizerBinderProcessor());
     }
 }
