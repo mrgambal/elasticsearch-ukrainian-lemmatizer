@@ -1,6 +1,11 @@
-build/
 .gradle/
-.DS_Store
-*.iml
 .idea/
+.settings/
+bin/
+build/
 data/
+
+.classpath
+.DS_Store
+.project
+*.iml
