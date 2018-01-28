@@ -39,47 +39,48 @@ Manual building of the plugin consists of only 4 steps:
  * Find the built artifact in ```build/distributions/```
  * Import it into your ES installation with ```<path_to_es_bin_dir>/plugin install <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-<plugin_version>.zip```
  
-**Example**: ```./plugin install file:/home/tenshi/projects/elasticsearch-ukrainian-lemmagen/build/distributions/elasticsearch-ukrainian-lemmatizer-1.1.0.zip```
+**Example**: ```./plugin install file:/home/tenshi/projects/elasticsearch-ukrainian-lemmagen/build/distributions/elasticsearch-ukrainian-lemmatizer-1.5.2.zip```
 
 
 ## Usage
 
-Here are simple examples of the plugin usage that rely on ES HTTP API.
-First of all we need to create the index which must include our analyzer:
+Here are simple example of the plugin usage that rely on ES HTTP API.
+First we need to create the index which must include our analyzer. But let's make it in a way a bit fancier than the usual one: make it a part of a custom analyzer with an additional list of stopwords. In effect, only the word "гусята" is to be blacklisted.
 
-```bash
+```shell
 # Create index with settings
 curl -XPUT "http://localhost:9200/ukrainian/" -d '
 {
-   "settings":{
-      "index":{
-         "analysis":{
-            "analyzer":{
-               "ukrainian":{
-                  "type": "ukrainian"
-               }
+    "settings": {
+        "analysis": {
+            "analyzer": {
+                "my_ukrainian": {
+                    "type": "ukrainian",
+                    "stopwords": [
+                        "гусята"
+                    ]
+                }
             }
-         }
-      }
-   }
+        }
+    }
 }
 '
 ```
 
-Then we create some simple mapping:
+Then we create a simple mapping:
 
-```bash
+```shell
 # Define mapping
 curl -XPOST "http://localhost:9200/ukrainian/user/_mapping" -d '
 {
    "user":{
       "_all":{
-         "analyzer":"ukrainian"
+         "analyzer":"my_ukrainian"
       },
       "properties":{
          "test":{
             "type":"string",
-            "analyzer":"ukrainian"
+            "analyzer":"my_ukrainian"
          }
       }
    }
@@ -89,29 +90,25 @@ curl -XPOST "http://localhost:9200/ukrainian/user/_mapping" -d '
 
 And fill the index with a sample data:
 
-```bash
+```shell
 # Create Documents
 curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
-{
-   "test":"гусятам"
-}'
-curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
-{
-   "test":"підострожує"
-}'
-curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
-{
-   "test":"гусяти"
-}'
-curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
-{
-   "test":"п’яничка"
-}'
+{"create": {}}
+{ "test": "гусята" }
+{"create": {}}
+{ "test": "гусяти" }
+{"create": {}}
+{ "test": "гусятам" }
+{"create": {}}
+{ "test": "підострожує" }
+{"create": {}}
+{ "test": "п’яничка" }
+'
 ```
 
-Having that done and filled this index with some data we may query it using the same analyzer:
+Having that done and filled this index with some data we can query it using the same analyzer:
 
-```bash
+```shell
 # Search
 curl -XPOST "http://localhost:9200/ukrainian/user/_search?pretty=true" -d '
 {
@@ -119,7 +116,7 @@ curl -XPOST "http://localhost:9200/ukrainian/user/_search?pretty=true" -d '
       "match":{
          "_all": {
              "query": "гусятах",
-             "analyzer": "ukrainian"
+             "analyzer": "my_ukrainian"
          }
       }
    }
@@ -131,7 +128,7 @@ And here is what you'll receive:
 
 ```json
 {
-    "took": 111,
+    "took": 104,
     "timed_out": false,
     "_shards": {
         "total": 5,
@@ -140,22 +137,22 @@ And here is what you'll receive:
     },
     "hits": {
         "total": 2,
-        "max_score": 1.0,
+        "max_score": 0.5945348,
         "hits": [{
             "_index": "ukrainian",
             "_type": "user",
-            "_id": "AU_mWjT6wMGwUI93ytgK",
-            "_score": 1.0,
+            "_id": "AWE8Vt4G8T79yKC4TtYm",
+            "_score": 0.5945348,
             "_source": {
-                "test": "гусяти"
+                "test": "гусятам"
             }
         }, {
             "_index": "ukrainian",
             "_type": "user",
-            "_id": "AU_mWicgwMGwUI93ytgI",
-            "_score": 0.30685282,
+            "_id": "AWE8Vt4G8T79yKC4TtYo",
+            "_score": 0.5945348,
             "_source": {
-                "test": "гусятам"
+                "test": "гусяти"
             }
         }]
     }
@@ -177,7 +174,7 @@ And here is what you'll receive:
     - 2.2.1 (release v1.3.0)
     - 2.3.3 (release v1.4.1)
     - 2.3.5 (release v1.4.2)
-    - 2.4.6 (release v1.5.0)
+    - 2.4.6 (release v1.5.2)
 * Java 8
 * Gradle 2.6+
 
