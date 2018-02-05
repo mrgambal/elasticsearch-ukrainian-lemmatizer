@@ -3,7 +3,7 @@
 curl -XDELETE "http://localhost:9200/ukrainian"
 
 # Create index with settings. Add "гусята" to the stopwords list.
-curl -XPUT "http://localhost:9200/ukrainian/" -d '
+curl -XPUT "http://localhost:9200/ukrainian/" -H 'Content-Type: application/json' -d '
 {
     "settings": {
         "analysis": {
@@ -21,12 +21,9 @@ curl -XPUT "http://localhost:9200/ukrainian/" -d '
 '
 
 # Define mapping
-curl -XPOST "http://localhost:9200/ukrainian/user/_mapping" -d '
+curl -XPOST "http://localhost:9200/ukrainian/user/_mapping" -H 'Content-Type: application/json' -d '
 {
    "user":{
-      "_all":{
-         "analyzer":"my_ukrainian"
-      },
       "properties":{
          "test":{
             "type":"string",
@@ -38,16 +35,16 @@ curl -XPOST "http://localhost:9200/ukrainian/user/_mapping" -d '
 '
 
 # Create documents
-curl -XPOST "http://localhost:9200/ukrainian/user/_bulk" -d '
-{"create": {}}
-{ "test": "гусятам" }
-{"create": {}}
-{ "test": "підострожує" }
-{"create": {}}
-{ "test": "гусяти" }
-{"create": {}}
+curl -XPOST "http://localhost:9200/ukrainian/user/_bulk" -H 'Content-Type: application/json' -d '
+{"create": {"_id": 1}}
 { "test": "гусята" }
-{"create": {}}
+{"create": {"_id": 2}}
+{ "test": "гусяти" }
+{"create": {"_id": 3}}
+{ "test": "гусятам" }
+{"create": {"_id": 4}}
+{ "test": "підострожує" }
+{"create": {"_id": 5}}
 { "test": "п’яничка" }
 '
 
@@ -55,11 +52,11 @@ curl -XPOST "http://localhost:9200/ukrainian/user/_bulk" -d '
 curl -XPOST "http://localhost:9200/ukrainian/_refresh"
 
 # Search with the word "гусята" being blacklisted.
-curl -XPOST "http://localhost:9200/ukrainian/user/_search?pretty=true" -d '
+curl -XPOST "http://localhost:9200/ukrainian/user/_search?pretty=true" -H 'Content-Type: application/json' -d '
 {
    "query":{
       "match":{
-         "_all": {
+         "test": {
              "query": "гусятах",
              "analyzer": "my_ukrainian"
          }

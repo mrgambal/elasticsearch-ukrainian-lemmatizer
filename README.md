@@ -49,7 +49,7 @@ First we need to create the index which must include our analyzer. But let's mak
 
 ```shell
 # Create index with settings
-curl -XPUT "http://localhost:9200/ukrainian/" -d '
+curl -XPUT "http://localhost:9200/ukrainian/" -H 'Content-Type: application/json' -d '
 {
     "settings": {
         "analysis": {
@@ -71,12 +71,9 @@ Then we create a simple mapping:
 
 ```shell
 # Define mapping
-curl -XPOST "http://localhost:9200/ukrainian/user/_mapping" -d '
+curl -XPOST "http://localhost:9200/ukrainian/user/_mapping" -H 'Content-Type: application/json' -d '
 {
    "user":{
-      "_all":{
-         "analyzer":"my_ukrainian"
-      },
       "properties":{
          "test":{
             "type":"string",
@@ -92,16 +89,16 @@ And fill the index with a sample data:
 
 ```shell
 # Create Documents
-curl -XPOST "http://localhost:9200/ukrainian/user/" -d '
-{"create": {}}
+curl -XPOST "http://localhost:9200/ukrainian/user/_bulk" -H 'Content-Type: application/json' -d '
+{"create": {"_id": 1}}
 { "test": "гусята" }
-{"create": {}}
+{"create": {"_id": 2}}
 { "test": "гусяти" }
-{"create": {}}
+{"create": {"_id": 3}}
 { "test": "гусятам" }
-{"create": {}}
+{"create": {"_id": 4}}
 { "test": "підострожує" }
-{"create": {}}
+{"create": {"_id": 5}}
 { "test": "п’яничка" }
 '
 ```
@@ -110,11 +107,11 @@ Having that done and filled this index with some data we can query it using the 
 
 ```shell
 # Search
-curl -XPOST "http://localhost:9200/ukrainian/user/_search?pretty=true" -d '
+curl -XPOST "http://localhost:9200/ukrainian/user/_search?pretty=true" -H 'Content-Type: application/json' -d '
 {
    "query":{
       "match":{
-         "_all": {
+         "test": {
              "query": "гусятах",
              "analyzer": "my_ukrainian"
          }
