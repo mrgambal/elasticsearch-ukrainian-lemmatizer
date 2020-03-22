@@ -169,9 +169,16 @@ And here is what you'll receive:
     - 1.7.+ (release v1.0)
     - 2.0.0 (release v1.1.0)
     - 2.0.1 (release v1.1.1)
-    - 2.1.0 (release v1.1.2)
+    - 2.0.2 (release v1.1.3)
+    - 2.1.0 (release v1.2.0)
+    - 2.1.1 (release v1.2.1)
+    - 2.1.2 (release v1.2.2)
+    - 2.2.1 (release v1.3.0)
+    - 2.3.3 (release v1.4.1)
+    - 2.3.5 (release v1.4.3)
+    - 2.4.6 (release v1.5.3)
 * Java 8
-* Gradle 2.6+
+* Gradle 6+
 
 [releases]: https://github.com/mrgambal/elasticsearch-ukrainian-lemmatizer/releases "Plugin releases"
 [permissions]: https://github.com/elastic/elasticsearch/issues/16459 "Control access issue"
