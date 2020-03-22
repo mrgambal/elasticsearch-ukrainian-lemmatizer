@@ -5,6 +5,7 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.plugin.analysis.ukrainian_lemmatizer.UkrainianLemmatizerPlugin;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.test.ESIntegTestCase;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -30,8 +31,8 @@ public class TestUkrainianAnalysisIntegration extends ESIntegTestCase {
                 .prepareAnalyze("б'ючи іменинника").setAnalyzer("ukrainian")
                 .execute().get();
 
-        assertThat(response, notNullValue());
-        assertThat(response.getTokens().size(), is(2));
+        MatcherAssert.assertThat(response, notNullValue());
+        MatcherAssert.assertThat(response.getTokens().size(), is(2));
     }
 
     @Test
@@ -40,8 +41,8 @@ public class TestUkrainianAnalysisIntegration extends ESIntegTestCase {
                 .prepareAnalyze("конденсаторної").setTokenFilters("ukrainian_lemmatizer")
                 .execute().get();
 
-        assertThat(response, notNullValue());
-        assertThat(response.getTokens().size(), is(1));
+        MatcherAssert.assertThat(response, notNullValue());
+        MatcherAssert.assertThat(response.getTokens().size(), is(1));
     }
 
     @Test
