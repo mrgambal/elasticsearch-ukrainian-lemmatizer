@@ -1,6 +1,8 @@
-# Ukrainian lemmatizer plugin for ElasticSearch [1.7 - 2.x]
+# Ukrainian lemmatizer plugin for ElasticSearch [1.7 - 5.x]
 
-The plugin provides a capability for ElasticSearch installations prior to version 5 to search across documents, written in ukrainian, using words in different forms. Starting from version 5.0 ElasticSearch uses [Lucene][Lucene] of version 6.2, which provides support for ukrainian language analysis [out of the box](https://issues.apache.org/jira/browse/LUCENE-7287).
+The plugin provides an ability for ElasticSearch installations prior to version 6 (to be expanded) to search across documents, written in ukrainian, using words in different forms.
+Starting from version 5.0 ElasticSearch uses [Lucene][Lucene] of version 6.2, which provides support for ukrainian language analysis [out of the box](https://issues.apache.org/jira/browse/LUCENE-7287).
+However, this plugin is still worthy, I swear! It uses the latest and greatest from [the BrUk project][BrUk], and, moreover, it allows specifying arbitrary stop-words. 
 
 ## Principles
 
@@ -21,26 +23,16 @@ Download a zip-file with the corresponding version of ES supported and install i
 ### ES 2.0.0-2.4.6
 ```<path_to_es_bin_dir>/plugin install file:<path_to_distribution>/elasticsearch-ukrainian-lemmatizer-<plugin_version>.zip```
 
+### For ES version 5+
+```<path_to_es_bin_dir>/elasticsearch-plugin install file:<path_to_distribution>/elasticsearch-ukrainian-lemmatizer-<plugin_version>.zip```
+
 ## Build the plugin
 
 Manual building of the plugin consists of only 4 steps:
 
-### For ES version 1.7.+
  * Clone this repository
  * Get inside the root dir of the cloned repo and run ```gradle release```
- * Find the built artifact in ```build/distributions/```
- * Import it into your ES installation with ```<path_to_es_bin_dir>/plugin --url <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
- 
-**Example**: ```./plugin --url file:///home/mrgambal/projects/elasticsearch-ukrainian-lemmagen/build/distributions/elasticsearch-ukrainian-lemmatizer-1.0-SNAPSHOT.zip --install ukrainian-lemmatizer```
-
-### For ES version 2.0.0-2.4.6
- * Clone this repository
- * Get inside the root dir of the cloned repo and run ```gradle release```
- * Find the built artifact in ```build/distributions/```
- * Import it into your ES installation with ```<path_to_es_bin_dir>/plugin install <path_to_distribution>/elasticsearch-ukrainian-lemmatizer-<plugin_version>.zip```
- 
-**Example**: ```./plugin install file:/home/tenshi/projects/elasticsearch-ukrainian-lemmagen/build/distributions/elasticsearch-ukrainian-lemmatizer-1.5.2.zip```
-
+ * Find the built artifact in ```build/distributions/```.
 
 ## Usage
 
@@ -170,10 +162,11 @@ And here is what you'll receive:
     - 2.1.2 (release v1.2.2)
     - 2.2.1 (release v1.3.0)
     - 2.3.3 (release v1.4.1)
-    - 2.3.5 (release v1.4.2)
-    - 2.4.6 (release v1.5.2)
+    - 2.3.5 (release v1.4.3)
+    - 2.4.6 (release v1.5.3)
+    - 5.6.16 (release v1.6.0)
 * Java 8
-* Gradle 2.6+
+* Gradle 6+
 
 [Lucene]: https://github.com/apache/lucene-solr/tree/master/lucene
 [BrUk]: https://github.com/brown-uk/corpus

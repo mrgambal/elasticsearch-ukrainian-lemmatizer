@@ -18,8 +18,15 @@ package org.elasticsearch.index.analysis;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.BaseTokenStreamTestCase;
-import org.elasticsearch.common.lucene.Lucene;
+import org.elasticsearch.Version;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.env.Environment;
+import org.elasticsearch.index.Index;
+import org.elasticsearch.index.IndexSettings;
+import org.elasticsearch.index.analysis.ukrainian_lemmatizer.UkrainianAnalyzerProvider;
 import org.elasticsearch.indices.analysis.ukrainian_lemmatizer.UkrainianAnalyzer;
+import org.elasticsearch.test.IndexSettingsModule;
 
 import java.io.IOException;
 
@@ -27,39 +34,54 @@ import java.io.IOException;
  * Test case for UkrainianAnalyzer.
  */
 public class TestUkrainianAnalyzer extends BaseTokenStreamTestCase {
+    private final Index index = new Index("test", "_na_");
+    private final Settings ixSettings = Settings
+            .builder()
+            .put(Environment.PATH_HOME_SETTING.getKey(), createTempDir())
+            .put(IndexMetaData.SETTING_VERSION_CREATED, Version.CURRENT)
+            .build();
+    private final IndexSettings indexSettings = IndexSettingsModule.newIndexSettings(index, ixSettings);
+    private final Environment env = new Environment(ixSettings);
+
+
+    private UkrainianAnalyzer getUkrainianAnalyzer() {
+        return new UkrainianAnalyzerProvider(indexSettings, env, index.getName(), Settings.EMPTY).get();
+    }
 
     /**
      * Check that UkrainianAnalyzer doesn't discard any numbers
      */
     public void testDigitsInUkrainianCharset() throws IOException {
-        UkrainianAnalyzer ra = new UkrainianAnalyzer(Lucene.VERSION);
-        assertAnalyzesTo(ra, "text 1000", new String[]{"text", "1000"});
-        ra.close();
+        UkrainianAnalyzer ua = getUkrainianAnalyzer();
+        assertAnalyzesTo(ua, "text 1000", new String[]{"text", "1000"});
+        ua.close();
     }
 
     public void testReusableTokenStream() throws Exception {
-        Analyzer a = new UkrainianAnalyzer(Lucene.VERSION);
-        assertAnalyzesTo(a, "Ця п'єса, у свою чергу, рухається по емоційно-напруженому колу за ритм-енд-блюзом.",
+        Analyzer ua = getUkrainianAnalyzer();
+        assertAnalyzesTo(ua,
+                "Ця п'єса, у свою чергу, рухається по емоційно-напруженому колу за ритм-енд-блюзом.",
                 new String[]{"п'єса", "черга", "рухатися", "емоційно", "напружений", "кола", "коло", "кіл", "ритм", "енд", "блюз"});
-        a.close();
+        ua.close();
     }
 
     public void testSpecialCharsTokenStream() throws Exception {
-        Analyzer a = new UkrainianAnalyzer(Lucene.VERSION);
-        assertAnalyzesTo(a, "м'яса м'я\u0301са м\u02BCяса м\u2019яса м\u2018яса м`яса",
+        Analyzer a = getUkrainianAnalyzer();
+        assertAnalyzesTo(a,
+                "м'яса м'я\u0301са м\u02BCяса м\u2019яса м\u2018яса м`яса",
                 new String[]{"м'ясо", "м'ясо", "м'ясо", "м'ясо", "м'ясо", "м'ясо"});
         a.close();
     }
 
     public void testCapsTokenStream() throws Exception {
-        Analyzer a = new UkrainianAnalyzer(Lucene.VERSION);
+        Analyzer a = getUkrainianAnalyzer();
         assertAnalyzesTo(a, "Цих Чайковського і Ґете.",
                 new String[]{"Чайковське", "Чайковський", "Гете"});
         a.close();
     }
 
     public void testSampleSentence() throws Exception {
-        Analyzer a = new UkrainianAnalyzer(Lucene.VERSION);
+        Analyzer a = getUkrainianAnalyzer();
         assertAnalyzesTo(a, "Це — проект генерування словника з тегами частин мови для української мови.",
                 new String[]{"проект", "генерування", "словник", "тег", "частина", "мова", "українська", "український", "Українська", "мова"});
         a.close();
@@ -69,7 +91,7 @@ public class TestUkrainianAnalyzer extends BaseTokenStreamTestCase {
      * blast some random strings through the analyzer
      */
     public void testRandomStrings() throws Exception {
-        Analyzer analyzer = new UkrainianAnalyzer(Lucene.VERSION);
+        Analyzer analyzer = getUkrainianAnalyzer();
         checkRandomData(random(), analyzer, 1000 * RANDOM_MULTIPLIER);
         analyzer.close();
     }

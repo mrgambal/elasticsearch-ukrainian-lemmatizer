@@ -17,18 +17,18 @@
 package org.elasticsearch.indices.analysis.ukrainian_lemmatizer;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.CharArraySet;
+import org.apache.lucene.analysis.StopwordAnalyzerBase;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.charfilter.MappingCharFilter;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.miscellaneous.SetKeywordMarkerFilter;
 import org.apache.lucene.analysis.morfologik.MorfologikFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.analysis.util.CharArraySet;
-import org.apache.lucene.analysis.util.StopwordAnalyzerBase;
-import org.apache.lucene.util.Version;
+import org.elasticsearch.index.analysis.CharFilterFactory;
+import org.elasticsearch.index.analysis.TokenFilterFactory;
 import org.sotnya.lemmatizer.uk.engine.UkrainianLemmatizerResources;
 
 import java.io.Reader;
@@ -39,24 +39,35 @@ import java.io.Reader;
  */
 public final class UkrainianAnalyzer extends StopwordAnalyzerBase {
     private final CharArraySet stemExclusionSet;
+    private final CharFilterFactory charFilterFactory;
+    private final TokenFilterFactory tokenFilterFactory;
 
     /**
      * Builds an analyzer with the default stop words.
      *
-     * @param version current Lucene version
+     * @param tokenFilterFactory A provider for the corresponding token filter.
+     * @param charFilterFactory  A provider for the corresponding character filter.
      */
-    public UkrainianAnalyzer(Version version) {
-        this(UkrainianLemmatizerResources.getDefaultStopSet(), version);
+    public UkrainianAnalyzer(
+            TokenFilterFactory tokenFilterFactory,
+            CharFilterFactory charFilterFactory
+    ) {
+        this(tokenFilterFactory, charFilterFactory, UkrainianLemmatizerResources.getDefaultStopSet());
     }
 
     /**
      * Builds an analyzer with the given stop words.
      *
-     * @param stopwords a stopword set
-     * @param version   current Lucene version
+     * @param tokenFilterFactory A provider for the corresponding token filter.
+     * @param charFilterFactory  A provider for the corresponding character filter.
+     * @param stopwords          a stopword set
      */
-    public UkrainianAnalyzer(CharArraySet stopwords, Version version) {
-        this(stopwords, CharArraySet.EMPTY_SET, version);
+    public UkrainianAnalyzer(
+            TokenFilterFactory tokenFilterFactory,
+            CharFilterFactory charFilterFactory,
+            CharArraySet stopwords
+    ) {
+        this(tokenFilterFactory, charFilterFactory, stopwords, CharArraySet.EMPTY_SET);
     }
 
     /**
@@ -64,20 +75,27 @@ public final class UkrainianAnalyzer extends StopwordAnalyzerBase {
      * provided this analyzer will add a {@link SetKeywordMarkerFilter} before
      * stemming.
      *
-     * @param stopwords        a stopword set
-     * @param stemExclusionSet a set of terms not to be stemmed
-     * @param version          current Lucene version
+     * @param tokenFilterFactory A provider for the corresponding token filter.
+     * @param charFilterFactory  A provider for the corresponding character filter.
+     * @param stopwords          a stopword set
+     * @param stemExclusionSet   a set of terms not to be stemmed
      */
-    public UkrainianAnalyzer(CharArraySet stopwords, CharArraySet stemExclusionSet, Version version) {
+    public UkrainianAnalyzer(
+            TokenFilterFactory tokenFilterFactory,
+            CharFilterFactory charFilterFactory,
+            CharArraySet stopwords,
+            CharArraySet stemExclusionSet
+    ) {
         super(stopwords);
 
-        this.setVersion(version);
         this.stemExclusionSet = CharArraySet.unmodifiableSet(CharArraySet.copy(stemExclusionSet));
+        this.charFilterFactory = charFilterFactory;
+        this.tokenFilterFactory = tokenFilterFactory;
     }
 
     @Override
     protected Reader initReader(String fieldName, Reader reader) {
-        return new MappingCharFilter(UkrainianLemmatizerResources.NORMALIZE_MAP, reader);
+        return charFilterFactory.create(reader);
     }
 
     /**
@@ -102,7 +120,7 @@ public final class UkrainianAnalyzer extends StopwordAnalyzerBase {
             result = new SetKeywordMarkerFilter(result, stemExclusionSet);
         }
 
-        result = new MorfologikFilter(result, UkrainianLemmatizerResources.getDictionary());
+        result = tokenFilterFactory.create(result);
 
         return new TokenStreamComponents(source, result);
     }

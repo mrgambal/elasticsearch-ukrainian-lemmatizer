@@ -1,11 +1,11 @@
 package org.sotnya.lemmatizer.uk.engine;
 
 import morfologik.stemming.Dictionary;
+import org.apache.logging.log4j.Logger;
+import org.apache.lucene.analysis.CharArraySet;
+import org.apache.lucene.analysis.WordlistLoader;
 import org.apache.lucene.analysis.charfilter.NormalizeCharMap;
-import org.apache.lucene.analysis.util.CharArraySet;
-import org.apache.lucene.analysis.util.WordlistLoader;
 import org.apache.lucene.util.IOUtils;
-import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.ESLoggerFactory;
 
 import java.io.IOException;
@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Serves purposes of safe loading of static resources and providing them to other parts of the application.
  */
-public class UkrainianLemmatizerResources {
+public final class UkrainianLemmatizerResources {
     /**
      * File containing default Ukrainian stopwords.
      */
@@ -26,7 +26,7 @@ public class UkrainianLemmatizerResources {
      */
     private static final String DICTIONARY_FILE_PATH = "ua/net/nlp/ukrainian.dict";
 
-    private static final ESLogger LOGGER = ESLoggerFactory.getLogger(UkrainianLemmatizerResources.class.getSimpleName());
+    private static final Logger LOGGER = ESLoggerFactory.getLogger(UkrainianLemmatizerResources.class.getSimpleName());
 
     public static final NormalizeCharMap NORMALIZE_MAP = new NormalizeCharMap.Builder() {{
         // different apostrophes

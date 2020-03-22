@@ -38,7 +38,7 @@ public class TestUkrainianAnalysisIntegration extends ESIntegTestCase {
     @Test
     public void testUkrainianLemmatizerTokenFilter() throws ExecutionException, InterruptedException {
         AnalyzeResponse response = client().admin().indices()
-                .prepareAnalyze("конденсаторної").setTokenFilters("ukrainian_lemmatizer")
+                .prepareAnalyze("конденсаторної").addTokenFilter("ukrainian")
                 .execute().get();
 
         MatcherAssert.assertThat(response, notNullValue());
